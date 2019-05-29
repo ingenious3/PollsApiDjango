@@ -23,3 +23,9 @@ from .serializers import PollSerializer, ChoiceSerializer, VoteSerializer
 class PollViewSet(viewsets.ModelViewSet):
 	queryset = Poll.objects.all()
 	serializer_class = PollSerializer
+
+	def destroy(self, request, *args, **kwargs):
+		poll = Poll.objects.get(pk=self.kwargs['pk'])
+		if not request.user == poll.created_by:
+			raise PermissionError("You can not delete the poll")
+		return super().destroy(request,*args, **kwargs)
